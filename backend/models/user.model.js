@@ -3,10 +3,26 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true, trim: true },
-    password: { type: String, required: true, minlength: 6 },
-    role: { type: String, default: "user", enum: ["user", "admin"] },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    role: {
+      type: String,
+      default: "user",
+      enum: ["user", "admin"],
+    },
     cartItems: [
       {
         product: {
@@ -34,9 +50,8 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (password) {
-    return await bcrypt.compare(password, this.password);
-}
-
+  return await bcrypt.compare(password, this.password);
+};
 
 const userModel = mongoose.model("User", userSchema);
 export default userModel;

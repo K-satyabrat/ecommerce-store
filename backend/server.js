@@ -5,6 +5,10 @@ import "dotenv/config";
 import { connectDB } from "./config/db.js";
 import autheRoutes from "./routes/auth.routes.js";
 import productRoutes from "./routes/product.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
+import couponRoutes from "./routes/coupon.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -15,7 +19,10 @@ app.use(cors());
 
 app.use("/api/auth", autheRoutes);
 app.use("/api/products", productRoutes);
-
+app.use("/api/cart", cartRoutes);
+app.use("/api/coupon", couponRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/analytics",analyticsRoutes)
 app.get("/", (req, res) => {
   res.send("Hello from Express ES6 server!");
 });

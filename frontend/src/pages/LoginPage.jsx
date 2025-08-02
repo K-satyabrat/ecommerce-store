@@ -14,7 +14,7 @@ const loading = true
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(email, password);
-    login(email, password);
+
   };
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -113,7 +113,7 @@ const loading = true
           </form>
 
           <p className="mt-8 text-center text-sm text-gray-400">
-            Not a member?{" "}
+            Not a member?
             <Link
               to="/signup"
               className="font-medium text-emerald-400 hover:text-emerald-300"
@@ -128,3 +128,5 @@ const loading = true
 };
 
 export default LoginPage;
+
+

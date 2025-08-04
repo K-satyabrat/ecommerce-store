@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", protectRoute, adminRoute, getProducts);
+router.get("/getAllProducts", protectRoute, adminRoute, getProducts);
 router.get("/featured-product", getFeaturedProducts);
 router.post("/createProduct", protectRoute, adminRoute, createProduct);
 router.delete("/delete/:id", protectRoute, adminRoute, deleteProduct);

@@ -4,19 +4,22 @@ export const addToCart = async (req, res) => {
   try {
     const { productId } = req.body;
     const user = req.user;
-    const existingItem = user.cartItem.find((item) => item.id === productId);
+
+    // Find by product field,
+   const existingItem = user.cartItems.find(
+  (item) => item.product && item.product.toString() === productId
+);
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      user.cartItem.push({ id: productId, quantity: 1 });
+      user.cartItems.push({ product: productId, quantity: 1 });
     }
+
     await user.save();
-    return res.json(user.cartItems);
+    res.json(user.cartItems);
   } catch (error) {
-    console.log("Error in addCart controller", error.message);
-    return res
-      .status(500)
-      .json({ message: "Server Error", error: error.message });
+    console.log("Error in addToCart controller", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 

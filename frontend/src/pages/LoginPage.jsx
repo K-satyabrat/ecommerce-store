@@ -1,19 +1,22 @@
 import { useState } from "react";
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
+import {  Mail, Lock, ArrowRight, Loader, LogIn } from "lucide-react";
 import { Link } from "react-router-dom";
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
+import { useUserStore } from "../stores/useUserStore";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  	// const { login, loading } = useUserStore();
-const loading = true
+  	
 
 
+
+const { login, loading } = useUserStore();
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
+    // console.log(email, password);
+    login(email,password)
 
   };
   return (
@@ -25,7 +28,7 @@ const loading = true
         transition={{ duration: 0.8 }}
       >
         <h2 className="mt-6 text-center text-3xl font-extrabold text-emerald-400">
-          Create your account
+          Login 
         </h2>
       </motion.div>
 

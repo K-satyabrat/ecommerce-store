@@ -53,7 +53,7 @@ export const useUserStore = create((set) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ user: null });
-      console.log("logout");
+      toast.success("Logout successful");
     } catch (error) {
       toast.error(
         error.response?.data?.message || "An error occurred during logout"
@@ -68,7 +68,9 @@ export const useUserStore = create((set) => ({
       // console.log("checkAuth response:", response.data);
       set({ user: response.data, checkingAuth: false });
     } catch (error) {
+     if (error.response?.status !== 401) {
       console.log(error.message);
+    }
       set({ checkingAuth: false, user: null });
     }
   },

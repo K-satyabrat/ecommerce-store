@@ -40,7 +40,12 @@ export const useCartStore = create((set, get) => ({
       });
       get().calculateTotals();
     } catch (error) {
-      toast.error(error.response.data.message || "An error occurred");
+      const backendMsg = error.response?.data?.message;
+      if (backendMsg === "Unauthorized - No access token provided") {
+        toast.error("Please login first");
+      } else {
+        toast.error(backendMsg || "An error occurred");
+      }
     }
   },
 
@@ -53,9 +58,12 @@ export const useCartStore = create((set, get) => ({
     );
     let total = subtotal;
 
-    if (coupon) {
-      const discount = subtotal * (coupon.discount / 100);
+    console.log("Calculating totals:", { subtotal, coupon });
+
+    if (coupon && coupon.discountPercentage) {
+      const discount = subtotal * (coupon.discountPercentage / 100);
       total = subtotal - discount;
+      console.log("Applied discount:", { discount, total });
     }
 
     set({ subtotal, total });
@@ -88,4 +96,34 @@ export const useCartStore = create((set, get) => ({
     }));
     get().calculateTotals();
   },
+
+  clearCart: () => {
+    set({ cart: [], coupon: null, total: 0, subtotal: 0, isCouponApplied: false });
+  },
+
+  getMyCoupon: async () => {
+		try {
+			const response = await axiosInstance.get("/coupons");
+			set({ coupon: response.data });
+		} catch (error) {
+			console.error("Error fetching coupon:", error);
+		}
+	},
+	applyCoupon: async (code) => {
+		try {
+			const response = await axiosInstance.post("/coupons/validate", { code });
+			console.log("Coupon validation response:", response.data);
+			set({ coupon: response.data, isCouponApplied: true });
+			get().calculateTotals();
+			toast.success("Coupon applied successfully");
+		} catch (error) {
+			toast.error(error.response?.data?.message || "Failed to apply coupon");
+		}
+	},
+
+  removeCoupon: () => {
+		set({ coupon: null, isCouponApplied: false });
+		get().calculateTotals();
+		toast.success("Coupon removed");
+	},
 }));

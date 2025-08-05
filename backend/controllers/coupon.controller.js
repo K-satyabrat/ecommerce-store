@@ -29,6 +29,8 @@ export const validateCoupon = async (req, res) => {
 			message: "Coupon is valid",
 			code: coupon.code,
 			discountPercentage: coupon.discountPercentage,
+			expirationDate: coupon.expirationDate,
+			isActive: coupon.isActive,
 		});
 	} catch (error) {
 		console.log("Error in validateCoupon controller", error.message);

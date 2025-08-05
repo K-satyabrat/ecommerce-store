@@ -69,9 +69,7 @@ export const createCheckoutSession = async (req, res) => {
       },
     });
 
-    if (totalAmount >= 20000) {
-      await createNewCoupon(req.user._id);
-    }
+    // Coupon generation moved to checkoutSuccess function
     res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
   } catch (error) {
     console.error("Error processing checkout:", error);
@@ -87,6 +85,17 @@ export const checkoutSuccess = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status === "paid") {
+      // Check if order already exists for this session
+      const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+      
+      if (existingOrder) {
+        return res.status(200).json({
+          success: true,
+          message: "Order already processed for this session.",
+          orderId: existingOrder._id,
+        });
+      }
+
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
@@ -113,6 +122,15 @@ export const checkoutSuccess = async (req, res) => {
       });
 
       await newOrder.save();
+
+      // Generate coupon for orders >= $50 (5000 cents)
+      console.log(`Order total: ${session.amount_total} cents (${session.amount_total / 100} dollars)`);
+      if (session.amount_total >= 5000) {
+        console.log(`Generating coupon for user ${session.metadata.userId} with total amount: ${session.amount_total / 100}`);
+        await createNewCoupon(session.metadata.userId);
+      } else {
+        console.log(`Order amount ${session.amount_total / 100} is less than $50, no coupon generated`);
+      }
 
       res.status(200).json({
         success: true,
@@ -142,16 +160,34 @@ async function createStripeCoupon(discountPercentage) {
 }
 
 async function createNewCoupon(userId) {
-  await Coupon.findOneAndDelete({ userId });
+  console.log(`Creating new coupon for user: ${userId}`);
+  console.log(`User ID type: ${typeof userId}`);
+  
+  try {
+    // Delete existing coupon first
+    const deletedCoupon = await Coupon.findOneAndDelete({ userId });
+    console.log(`Deleted existing coupon:`, deletedCoupon);
 
-  const newCoupon = new Coupon({
-    code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-    discountPercentage: 10,
-    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-    userId: userId,
-  });
+    const newCoupon = new Coupon({
+      code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+      discountPercentage: 10,
+      expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      userId: userId,
+    });
 
-  await newCoupon.save();
+    console.log(`New coupon object before save:`, newCoupon);
 
-  return newCoupon;
+    await newCoupon.save();
+    console.log(`Created new coupon: ${newCoupon.code} for user: ${userId}`);
+    console.log(`Saved coupon object:`, newCoupon);
+
+    // Verify the coupon was saved by fetching it
+    const savedCoupon = await Coupon.findById(newCoupon._id);
+    console.log(`Verified saved coupon:`, savedCoupon);
+
+    return newCoupon;
+  } catch (error) {
+    console.error(`Error creating coupon for user ${userId}:`, error);
+    throw error;
+  }
 }

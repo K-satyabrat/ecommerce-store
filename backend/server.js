@@ -25,11 +25,11 @@ app.use(
 app.use("/api/auth", autheRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/coupon", couponRoutes);
+app.use("/api/coupons", couponRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.get("/", (req, res) => {
-  res.send("Hello from Express ES6 server!");
+  res.send("Hello !");
 });
 
 app.listen(PORT, () => {

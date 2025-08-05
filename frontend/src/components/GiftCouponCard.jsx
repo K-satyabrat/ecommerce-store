@@ -1,14 +1,29 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "../stores/useCartStore";
 
 function GiftCouponCard() {
-    const { coupon, isCouponApplied} = useCartStore();
+    const { coupon, isCouponApplied, applyCoupon, removeCoupon,getMyCoupon} = useCartStore();
     const [userInputCode, setUserInputCode] = useState("");
 
-const handleApplyCoupon = () => {}
-const handleRemoveCoupon = () => {}
+	useEffect(() => {
+		getMyCoupon();
+	}, [getMyCoupon]);
+
+	useEffect(() => {
+		if (coupon) setUserInputCode(coupon.code);
+	}, [coupon]);
+
+	const handleApplyCoupon = () => {
+		if (!userInputCode) return;
+		applyCoupon(userInputCode);
+	};
+
+	const handleRemoveCoupon = async () => {
+		await removeCoupon();
+		setUserInputCode("");
+	};
 
   return (
    <motion.div

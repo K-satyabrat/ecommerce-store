@@ -42,13 +42,18 @@ export const createCheckoutSession = async (req, res) => {
         );
       }
     }
+    // CLIENT_URL  scheme
+    let clientUrl = process.env.CLIENT_URL;
+    if (clientUrl && !/^https?:\/\//i.test(clientUrl)) {
+      clientUrl = `http://${clientUrl}`;
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
+      success_url: `${clientUrl}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${clientUrl}/purchase-cancel`,
       discounts: coupon
         ? [
             {

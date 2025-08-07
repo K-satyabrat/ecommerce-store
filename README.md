@@ -310,3 +310,5 @@ npm start
 - **Framer Motion** for animations
 - **Zustand** for state management
 
+## Deployment_url
+-https://e-store-xq62.onrender.com

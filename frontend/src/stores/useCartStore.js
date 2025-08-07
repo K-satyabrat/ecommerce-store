@@ -42,7 +42,7 @@ export const useCartStore = create((set, get) => ({
     } catch (error) {
       const backendMsg = error.response?.data?.message;
       if (backendMsg === "Unauthorized - No access token provided") {
-        toast.error("Please login first");
+        toast.error("Please login first", { duration: 1500 });
       } else {
         toast.error(backendMsg || "An error occurred");
       }
@@ -102,28 +102,28 @@ export const useCartStore = create((set, get) => ({
   },
 
   getMyCoupon: async () => {
-		try {
-			const response = await axiosInstance.get("/coupons");
-			set({ coupon: response.data });
-		} catch (error) {
-			console.error("Error fetching coupon:", error);
-		}
-	},
-	applyCoupon: async (code) => {
-		try {
-			const response = await axiosInstance.post("/coupons/validate", { code });
-			console.log("Coupon validation response:", response.data);
-			set({ coupon: response.data, isCouponApplied: true });
-			get().calculateTotals();
-			toast.success("Coupon applied successfully");
-		} catch (error) {
-			toast.error(error.response?.data?.message || "Failed to apply coupon");
-		}
-	},
+    try {
+      const response = await axiosInstance.get("/coupons");
+      set({ coupon: response.data });
+    } catch (error) {
+      console.error("Error fetching coupon:", error);
+    }
+  },
+  applyCoupon: async (code) => {
+    try {
+      const response = await axiosInstance.post("/coupons/validate", { code });
+      console.log("Coupon validation response:", response.data);
+      set({ coupon: response.data, isCouponApplied: true });
+      get().calculateTotals();
+      toast.success("Coupon applied successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to apply coupon");
+    }
+  },
 
   removeCoupon: () => {
-		set({ coupon: null, isCouponApplied: false });
-		get().calculateTotals();
-		toast.success("Coupon removed");
-	},
+    set({ coupon: null, isCouponApplied: false });
+    get().calculateTotals();
+    toast.success("Coupon removed");
+  },
 }));

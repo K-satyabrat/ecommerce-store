@@ -123,6 +123,10 @@ export const checkoutSuccess = async (req, res) => {
 
       await newOrder.save();
 
+    // Clear user's cart after successful order
+      const User = (await import('../models/user.model.js')).default;
+      await User.findByIdAndUpdate(session.metadata.userId, { cartItems: [] });
+
       // Generate coupon for orders >= $50 (5000 cents)
       console.log(`Order total: ${session.amount_total} cents (${session.amount_total / 100} dollars)`);
       if (session.amount_total >= 5000) {

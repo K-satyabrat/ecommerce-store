@@ -311,4 +311,4 @@ npm start
 - **Zustand** for state management
 
 ## Deployment_url
--https://e-store-xq62.onrender.com
+- https://e-store-xq62.onrender.com
